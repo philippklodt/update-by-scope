@@ -1,21 +1,13 @@
 const Path = require("path");
 const ChildProcess = require("child_process");
 
-const [
-  scope,
-  npmClient = "yarn",
-  clientCommand = "upgrade"
-] = process.argv.slice(2);
+const scopes = process.argv.slice(2) || ["@semvox", "@semvox-ai"];
 
-if (!scope) {
-  console.log(
-    "Usage: update-by-scope <scope> [npmClient=yarn] [npmClientCommand=upgrade]"
-  );
-  return;
-}
-if (scope[0] !== "@") {
-  console.error(`Scope should start with "@"`);
-  return;
+for (let scope of scopes) {
+  if (scope[0] !== "@") {
+    console.error(`Scopes should start with "@"`);
+    return;
+  }
 }
 
 const { dependencies = {}, devDependencies = {} } = require(Path.join(
@@ -36,16 +28,10 @@ if (!packageNames.length) {
   return;
 }
 
-const packageNamesWithVersion = packageNames.map(_ => `${_}@latest`);
-
 console.log(`Found ${packageNames.length} with scope "${scope}":`);
 console.log(packageNames);
-console.log(
-  `Executing "${npmClient} ${clientCommand} ${packageNamesWithVersion.join(
-    " "
-  )}"`
-);
+console.log(`Executing "npm update --no-save ${packageNames.join(" ")}"`);
 
-ChildProcess.spawnSync(npmClient, [clientCommand, ...packageNamesWithVersion], {
+ChildProcess.spawnSync("npm", ["update", "--no-save", ...packageNames], {
   stdio: "inherit"
 });
