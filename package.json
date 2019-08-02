@@ -1,9 +1,12 @@
 {
-  "name": "update-by-scope",
-  "version": "1.0.4",
+  "name": "@philippklodt/update-by-scope",
+  "version": "1.0.6",
   "main": "index.js",
   "bin": "bin.js",
-  "repository": "https://github.com/beshanoe/update-by-scope.git",
-  "author": "Maxim valenko <maxvalenko@gmail.com>",
-  "license": "MIT"
+  "repository": "https://github.com/philippklodt/update-by-scope.git",
+  "author": "Philipp Klodt <klodt@semvox.de>",
+  "license": "MIT",
+  "dependencies": {
+    "cross-spawn": "^6.0.5"
+  }
 }

@@ -1,13 +1,11 @@
 const Path = require("path");
-const ChildProcess = require("child_process");
+const spawn = require("cross-spawn");
 
-const scopes = process.argv.slice(2) || ["@semvox", "@semvox-ai"];
+const scopes = process.argv.slice(2);
 
-for (let scope of scopes) {
-  if (scope[0] !== "@") {
-    console.error(`Scopes should start with "@"`);
-    return;
-  }
+if (scopes.some(scope => scope[0] !== "@")) {
+  console.error(`Scopes should start with "@"`);
+  return;
 }
 
 const { dependencies = {}, devDependencies = {} } = require(Path.join(
@@ -17,21 +15,21 @@ const { dependencies = {}, devDependencies = {} } = require(Path.join(
 
 const packageNames = Array.from(
   new Set(
-    [...Object.keys(dependencies), ...Object.keys(devDependencies)].filter(_ =>
-      _.startsWith(scope)
+    [...Object.keys(dependencies), ...Object.keys(devDependencies)].filter(
+      pkgName => scopes.some(scope => pkgName.startsWith(scope))
     )
   )
 ).sort();
 
 if (!packageNames.length) {
-  console.log(`Found 0 packages with scope "${scope}"`);
+  console.log(`Found 0 packages with scopes "${scopes}"`);
   return;
 }
 
-console.log(`Found ${packageNames.length} with scope "${scope}":`);
+console.log(`Found ${packageNames.length} with scopes "${scopes}":`);
 console.log(packageNames);
 console.log(`Executing "npm update --no-save ${packageNames.join(" ")}"`);
 
-ChildProcess.spawnSync("npm", ["update", "--no-save", ...packageNames], {
+spawn("npm", ["update", "--no-save", ...packageNames], {
   stdio: "inherit"
 });
